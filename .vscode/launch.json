@@ -49,7 +49,7 @@
             "name": "MovieReleaseCount",
             "request": "launch",
             "mainClass": "hadoop.movie.tp.MovieReleaseCount",
-            "projectName": "wordcount",
+            "projectName": "movie",
             "args": [
                 "movie/src/main/resources/Movies.csv",
                 "movie/src/main/resources/output"

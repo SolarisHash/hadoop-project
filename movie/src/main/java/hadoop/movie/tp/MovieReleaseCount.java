@@ -6,7 +6,8 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+// Importez cette classe pour la sortie NullOutputFormat
+import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 
 public class MovieReleaseCount {
     public static void main(String[] args) throws Exception {
@@ -29,21 +30,23 @@ public class MovieReleaseCount {
         job.setMapperClass(CSVReleaseDateMapper.class);
         
         // Le combiner (facultatif) utilise également le Reducer dans ce cas pour optimiser la performance
-        job.setCombinerClass(IntSumReducer.class);
+        // Si vous souhaitez utiliser un combiner, assurez-vous qu'il est compatible avec le Reducer
+        // job.setCombinerClass(IntSumReducer.class);
         
-        // Définir le Reducer à utiliser (IntSumReducer)
-        job.setReducerClass(IntSumReducer.class);
+        // Définir le Reducer à utiliser (HBaseReducer)
+        job.setReducerClass(HBaseReducer.class);
         
         // Définir les classes de types de sortie pour les clés et valeurs
-        job.setOutputKeyClass(Text.class);  // La clé de sortie est de type Text (l'année de sortie)
-        job.setOutputValueClass(IntWritable.class);  // La valeur de sortie est de type IntWritable (le nombre de films)
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
         
-        // Chemin d'entrée du fichier CSV (args[0] est le premier argument en ligne de commande)
+        // Chemin d'entrée du fichier CSV
         FileInputFormat.addInputPath(job, new Path(args[0]));
         
-        // Chemin de sortie où les résultats seront enregistrés (args[1] est le deuxième argument en ligne de commande)
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
-        
+        // Si vous ne souhaitez pas générer de sortie dans HDFS (puisque les données sont insérées dans HBase),
+        // vous pouvez utiliser NullOutputFormat
+        job.setOutputFormatClass(NullOutputFormat.class);
+
         // Lancer le job et attendre sa complétion
         System.exit(job.waitForCompletion(true) ? 0 : 1);
     }
