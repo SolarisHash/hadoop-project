@@ -6,10 +6,10 @@
 -JDK 11  
 -La base de donnée => https://www.kaggle.com/datasets/mohammedalsubaie/movies  
 
-# Installation et Configuration
-1. Cloner le dépôt :
-   git clone https://github.com/SolarisHash/hadoop-project.git
-   cd movie
+# Installation et Configuration  
+1. Cloner le dépôt :  
+   git clone https://github.com/SolarisHash/hadoop-project.git  
+   cd movie  
 
 2. Télécharger l'image docker uploadée sur dockerhub:  
 docker pull liliasfaxi/hadoop-cluster:latest  
