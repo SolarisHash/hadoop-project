@@ -5,6 +5,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 
@@ -20,11 +21,25 @@ public class HBaseReducer extends Reducer<Text, IntWritable, Text, IntWritable> 
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
-        Configuration config = context.getConfiguration();
+        // Créer une configuration HBase à partir de la configuration du contexte
+        Configuration config = HBaseConfiguration.create(context.getConfiguration());
+
+        // Définir les paramètres HBase nécessaires
+        config.set("hbase.zookeeper.quorum", "hadoop-master"); // Remplacez par l'adresse de votre Zookeeper
+        config.set("hbase.zookeeper.property.clientPort", "2181"); // Port par défaut
+        // Si vous avez un znode parent personnalisé, décommentez la ligne suivante
+        // config.set("zookeeper.znode.parent", "/hbase");
+
+        // Initialiser HBaseUtils avec la configuration HBase
         hbaseUtils = new HBaseUtils(config);
+
+        // Créer la table si elle n'existe pas
         hbaseUtils.createTableIfNotExists(TABLE_NAME, COLUMN_FAMILY);
+
+        // Obtenir la référence à la table
         table = hbaseUtils.getTable(TABLE_NAME);
     }
+
 
     @Override
     public void reduce(Text key, Iterable<IntWritable> values, Context context)
@@ -37,10 +52,14 @@ public class HBaseReducer extends Reducer<Text, IntWritable, Text, IntWritable> 
 
         String year = key.toString();
         Put put = new Put(Bytes.toBytes(year));
-        put.addColumn(Bytes.toBytes(COLUMN_FAMILY), Bytes.toBytes(COLUMN), Bytes.toBytes(sum));
+
+        // Convertir la somme en chaîne de caractères
+        String sumAsString = Integer.toString(sum);
+        put.addColumn(Bytes.toBytes(COLUMN_FAMILY), Bytes.toBytes(COLUMN), Bytes.toBytes(sumAsString));
 
         table.put(put);
 
+        // Si vous souhaitez écrire dans le contexte
         context.write(key, new IntWritable(sum));
     }
 
@@ -53,4 +72,6 @@ public class HBaseReducer extends Reducer<Text, IntWritable, Text, IntWritable> 
             hbaseUtils.close();
         }
     }
+
+
 }
