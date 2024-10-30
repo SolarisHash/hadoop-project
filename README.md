@@ -49,7 +49,7 @@ hdfs dfs -mkdir -p input
 hdfs dfs -put  movie.csv input/
 
 5. Lancer le job map reduce  
-hadoop jar hadoop-project.jar hadoop.movie.tp.MovieReleaseCount /user/root/input /user/root/output  
+hadoop jar hadoop-project.jar input output  
 
 6. Afficher les dernières lignes du fichier généré output/part-r-00000  
 hdfs dfs -tail output/part-r-00000  
