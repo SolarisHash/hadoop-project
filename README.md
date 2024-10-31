@@ -47,18 +47,18 @@ start-hbase.sh
 4. Créer un répertoire dans HDFS, appelé input.  
 hdfs dfs -mkdir -p input
 
-5. Deplacer le fichier csv dans le repertoire input
+5. Deplacer le fichier csv dans le repertoire input  
 hdfs dfs -put movie.csv input/  
 
 6. Lancer le job map reduce  
 hadoop jar hadoop-project.jar hadoop.movie.tp.MovieReleaseCount /user/root/input /user/root/output
 
-7. Lancer ce script pour manipuler les données
+7. Lancer ce script pour manipuler les données  
 hbase shell
 
-8. Verifier que la table est bien créer
+8. Verifier que la table est bien créer  
 list
 
-9. Visualiser le résultat de l'insertion, en tapant
+9. Visualiser le résultat de l'insertion, en tapant  
 scan 'movie_release_counts'  
 
