@@ -21,25 +21,24 @@ public class HBaseReducer extends Reducer<Text, IntWritable, Text, IntWritable> 
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
-        // Créer une configuration HBase à partir de la configuration du contexte
+        // Create an HBase configuration from the context's configuration
         Configuration config = HBaseConfiguration.create(context.getConfiguration());
 
-        // Définir les paramètres HBase nécessaires
-        config.set("hbase.zookeeper.quorum", "hadoop-master"); // Remplacez par l'adresse de votre Zookeeper
-        config.set("hbase.zookeeper.property.clientPort", "2181"); // Port par défaut
-        // Si vous avez un znode parent personnalisé, décommentez la ligne suivante
+        // Set necessary HBase parameters
+        config.set("hbase.zookeeper.quorum", "hadoop-master"); // Replace with your Zookeeper address
+        config.set("hbase.zookeeper.property.clientPort", "2181"); // Default port
+        // If you have a custom parent znode, uncomment the following line
         // config.set("zookeeper.znode.parent", "/hbase");
 
-        // Initialiser HBaseUtils avec la configuration HBase
+        // Initialize HBaseUtils with the HBase configuration
         hbaseUtils = new HBaseUtils(config);
 
-        // Créer la table si elle n'existe pas
+        // Create the table if it does not exist
         hbaseUtils.createTableIfNotExists(TABLE_NAME, COLUMN_FAMILY);
 
-        // Obtenir la référence à la table
+        // Get the reference to the table
         table = hbaseUtils.getTable(TABLE_NAME);
     }
-
 
     @Override
     public void reduce(Text key, Iterable<IntWritable> values, Context context)
@@ -53,13 +52,13 @@ public class HBaseReducer extends Reducer<Text, IntWritable, Text, IntWritable> 
         String year = key.toString();
         Put put = new Put(Bytes.toBytes(year));
 
-        // Convertir la somme en chaîne de caractères
+        // Convert the sum to a string
         String sumAsString = Integer.toString(sum);
         put.addColumn(Bytes.toBytes(COLUMN_FAMILY), Bytes.toBytes(COLUMN), Bytes.toBytes(sumAsString));
 
         table.put(put);
 
-        // Si vous souhaitez écrire dans le contexte
+        // If you wish to write to the context
         context.write(key, new IntWritable(sum));
     }
 
@@ -72,6 +71,4 @@ public class HBaseReducer extends Reducer<Text, IntWritable, Text, IntWritable> 
             hbaseUtils.close();
         }
     }
-
-
 }

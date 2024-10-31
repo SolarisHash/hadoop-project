@@ -10,40 +10,40 @@ public class CSVReleaseDateMapper extends Mapper<Object, Text, Text, IntWritable
     
     private final static IntWritable one = new IntWritable(1);
     private Text year = new Text();  
-    private boolean isHeader = true;  // Variable pour ignorer l'en-tête (première ligne)
+    private boolean isHeader = true;  // Variable to skip the header (first line)
 
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
     
         String line = value.toString();
         
-        // Ignorer les lignes vides
+        // Skip empty lines
         if (line == null || line.isEmpty()) {
             return;
         }
 
-        // Ignorer l'en-tête si c'est la première ligne
+        // Skip the header if it's the first line
         if (isHeader) {
             isHeader = false;
             return;
         }
 
-        // Séparer la ligne en colonnes par les virgules
+        // Split the line into columns by commas
         String[] columns = line.split(",");
 
-        // Vérifier qu'il y a assez de colonnes (au moins 6 pour inclure "release_date")
+        // Check that there are enough columns (at least 6 to include "release_date")
         if (columns.length > 5) {
-            // Supposons que la colonne "release_date" soit la 6ème colonne (indice 5)
+            // Assume that the "release_date" column is the 6th column (index 5)
             String releaseDate = columns[5].trim();
             
-            // Vérifier que la date est bien formatée et qu'elle contient l'année (au moins 10 caractères)
+            // Check that the date is properly formatted and contains the year (exactly 10 characters)
             if (releaseDate.length() == 10 && releaseDate.charAt(2) == '/' && releaseDate.charAt(5) == '/') {
-                // Extraire l'année (les 4 derniers caractères de la chaîne)
+                // Extract the year (the last 4 characters of the string)
                 String releaseYear = releaseDate.substring(6, 10);
                 
-                // Définir l'année comme clé
+                // Set the year as the key
                 year.set(releaseYear);
                 
-                // Emettre l'année avec la valeur 1 pour chaque film
+                // Emit the year with the value 1 for each movie
                 context.write(year, one);
             }
         }

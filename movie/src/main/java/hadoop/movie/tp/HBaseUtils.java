@@ -10,11 +10,13 @@ public class HBaseUtils {
     private Connection connection;
     private Admin admin;
 
+    // Constructor: Initializes the HBase connection and admin
     public HBaseUtils(Configuration config) throws IOException {
         this.connection = ConnectionFactory.createConnection(config);
         this.admin = connection.getAdmin();
     }
 
+    // Method to create a table if it does not exist
     public void createTableIfNotExists(String tableNameStr, String columnFamily) throws IOException {
         TableName tableName = TableName.valueOf(tableNameStr);
         if (!admin.tableExists(tableName)) {
@@ -25,10 +27,12 @@ public class HBaseUtils {
         }
     }
 
+    // Method to get a reference to a table
     public Table getTable(String tableNameStr) throws IOException {
         return connection.getTable(TableName.valueOf(tableNameStr));
     }
 
+    // Method to close the connection and admin resources
     public void close() throws IOException {
         if (admin != null) {
             admin.close();
