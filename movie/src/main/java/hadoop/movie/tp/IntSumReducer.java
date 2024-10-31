@@ -8,21 +8,21 @@ import java.io.IOException;
 
 public class IntSumReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
     
-    private IntWritable result = new IntWritable(); // Stocke la somme des films par année
+    private IntWritable result = new IntWritable(); // Stores the sum of films by year
     
     public void reduce(Text key, Iterable<IntWritable> values, Context context) 
             throws IOException, InterruptedException {
-        int sum = 0; // Initialiser la somme à 0
+        int sum = 0;
         
-        // Parcourir toutes les valeurs associées à la clé (qui est l'année dans ce cas)
+        // Browse all values associated with the key (which in this case is the year)
         for (IntWritable val : values) {
-            sum += val.get(); // Additionner toutes les occurrences pour l'année
+            sum += val.get(); // Add up all occurrences for the year
         }
         
-        // Assigner la somme à la variable result
+        // Assign the sum to the result variable
         result.set(sum);
         
-        // Écrire l'année (key) et la somme (nombre de films) en sortie
+        // Write the year (key) and the sum (number of films) as output
         context.write(key, result);
     }
 }

@@ -10,41 +10,41 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class MovieReleaseCount {
     public static void main(String[] args) throws Exception {
-        // Vérifier que deux arguments (chemin d'entrée et de sortie) sont passés
+        // Check that two arguments (input and output path) are passed
         if (args.length != 2) {
             System.err.println("Usage: MovieReleaseCount <input path> <output path>");
             System.exit(-1);
         }
 
-        // Configuration de base pour le job MapReduce
+        // Basic MapReduce job configuration
         Configuration conf = new Configuration();
         
-        // Création d'une nouvelle instance de job
+        // Create a new job instance
         Job job = Job.getInstance(conf, "movie release year count");
         
-        // Définir la classe qui contient le point d'entrée (main) du programme
+        // Define the class that contains the program's entry point (main)
         job.setJarByClass(MovieReleaseCount.class);
         
-        // Définir le Mapper à utiliser (CSVReleaseDateMapper)
+        // Define the Mapper to use (CSVReleaseDateMapper)
         job.setMapperClass(CSVReleaseDateMapper.class);
         
-        // Le combiner (facultatif) utilise également le Reducer dans ce cas pour optimiser la performance
+        // The combiner (optional) also uses the Reducer in this case to optimize performance
         job.setCombinerClass(IntSumReducer.class);
         
-        // Définir le Reducer à utiliser (IntSumReducer)
+        // Define the Reducer to use (IntSumReducer)
         job.setReducerClass(IntSumReducer.class);
         
-        // Définir les classes de types de sortie pour les clés et valeurs
-        job.setOutputKeyClass(Text.class);  // La clé de sortie est de type Text (l'année de sortie)
-        job.setOutputValueClass(IntWritable.class);  // La valeur de sortie est de type IntWritable (le nombre de films)
+        // Define the output key and value classes
+        job.setOutputKeyClass(Text.class);          // The output key is of type Text (the release year)
+        job.setOutputValueClass(IntWritable.class); // The output value is of type IntWritable (number of movies)
         
-        // Chemin d'entrée du fichier CSV (args[0] est le premier argument en ligne de commande)
+        // Input path of the CSV file (args[0] is the first command-line argument)
         FileInputFormat.addInputPath(job, new Path(args[0]));
         
-        // Chemin de sortie où les résultats seront enregistrés (args[1] est le deuxième argument en ligne de commande)
+        // Output path where the results will be saved (args[1] is the second command-line argument)
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
         
-        // Lancer le job et attendre sa complétion
+        // Launch the job and wait for its completion
         System.exit(job.waitForCompletion(true) ? 0 : 1);
     }
 }
