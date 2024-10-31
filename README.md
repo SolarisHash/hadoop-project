@@ -41,7 +41,7 @@ docker exec -it hadoop-master bash
 2. Lancer hadoop et yarn  
 ./start-hadoop.sh
 
-3. Lancer HBase
+3. Lancer HBase  
 start-hbase.sh  
 
 4. Créer un répertoire dans HDFS, appelé input.  
