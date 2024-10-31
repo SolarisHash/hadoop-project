@@ -29,7 +29,8 @@ docker run -itd -p 8041:8042 --net=hadoop --name hadoop-worker2 --hostname hadoo
 8. Cliquer sur 'package' pour compiler et packager le projet dans un fichier JAR. Un fichier movie-1.0-SNAPSHOT-jar-with-dependencies.jar sera créé sous le répertoire target du projet.
 9. Copier le fichier jar créé dans le contenaire master. Pour cela:  
     -Ouvrir le terminal sur le répertoire du projet wordcount. Cela peut être fait avec VSCode en allant au menu Terminal -> New Terminal.  
-    -Taper la commande suivante:  
+    -Taper les commandes suivantes:
+      cd movie/  
       docker cp target/movie-1.0-SNAPSHOT-jar-with-dependencies.jar hadoop-master:/root/hadoop-project.jar
 
 # Lancer le programme  
