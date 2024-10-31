@@ -51,7 +51,7 @@ hdfs dfs -mkdir -p input
 hdfs dfs -put movie.csv input/  
 
 6. Lancer le job map reduce  
-hadoop jar hadoop-project.jar hadoop.movie.tp.MovieReleaseCount /user/root/input /user/root/output
+hadoop jar hadoop-project.jar input output
 
 7. Lancer ce script pour manipuler les données  
 hbase shell
