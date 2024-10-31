@@ -1,56 +1,86 @@
 # hadoop-project
 
-# Prérequis
--Docker  
--Hadoop => https://hadoop.apache.org/releases.html)  
--JDK 11  
--La base de donnée => https://www.kaggle.com/datasets/mohammedalsubaie/movies  
+## Prerequisites
+- Docker  
+- [Hadoop](https://hadoop.apache.org/releases.html)  
+- JDK 11  
+- [Dataset](https://www.kaggle.com/datasets/mohammedalsubaie/movies)  
 
-# Installation et Configuration  
-1. Cloner le dépôt :  
+## Installation and Configuration  
+1. Clone the repository:
+   ```bash
    git clone https://github.com/SolarisHash/hadoop-project.git  
    cd movie  
+   ```
 
-2. Créer un repertoire input dans le repertoire ressources et y mettre le fichier csv précédemment télécharger
+2. Create an `input` directory inside the `resources` directory and place the previously downloaded CSV file there.
 
-3. Télécharger l'image docker uploadée sur dockerhub:  
-docker pull liliasfaxi/hadoop-cluster:latest  
+3. Download the Docker image uploaded on DockerHub:
+   ```bash
+   docker pull liliasfaxi/hadoop-cluster:latest  
+   ```
 
-4. Créer un réseau qui permettra de relier les trois contenaires:  
-docker network create --driver=bridge hadoop
+4. Create a network that will connect the three containers:
+   ```bash
+   docker network create --driver=bridge hadoop
+   ```
 
-5. Créer et lancer les trois contenaires (les instructions -p permettent de faire un mapping entre les ports de la machine hôte et ceux du contenaire):  
-docker run -itd --net=hadoop -p 9870:9870 -p 8088:8088 -p 7077:7077 -p 16010:16010 --name hadoop-master --hostname hadoop-master liliasfaxi/hadoop-cluster:latest  
-docker run -itd -p 8040:8042 --net=hadoop --name hadoop-worker1 --hostname hadoop-worker1 liliasfaxi/hadoop-cluster:latest  
-docker run -itd -p 8041:8042 --net=hadoop --name hadoop-worker2 --hostname hadoop-worker2 liliasfaxi/hadoop-cluster:latest  
+5. Create and launch the three containers (the `-p` options allow mapping between the host machine's ports and those of the container):
+   ```bash
+   docker run -itd --net=hadoop -p 9870:9870 -p 8088:8088 -p 7077:7077 -p 16010:16010 --name hadoop-master --hostname hadoop-master liliasfaxi/hadoop-cluster:latest  
+   docker run -itd -p 8040:8042 --net=hadoop --name hadoop-worker1 --hostname hadoop-worker1 liliasfaxi/hadoop-cluster:latest  
+   docker run -itd -p 8041:8042 --net=hadoop --name hadoop-worker2 --hostname hadoop-worker2 liliasfaxi/hadoop-cluster:latest  
+   ```
 
-6. Vérifier que les trois contenaires tournent bien en lançant la commande 'docker ps'
-7. Aller dans l'Explorer, sous Maven, puis ouvrir le Lifecycle du projet movie
-8. Cliquer sur 'package' pour compiler et packager le projet dans un fichier JAR. Un fichier movie-1.0-SNAPSHOT-jar-with-dependencies.jar sera créé sous le répertoire target du projet.
-9. Copier le fichier jar créé dans le contenaire master. Pour cela:  
-    -Ouvrir le terminal sur le répertoire du projet wordcount. Cela peut être fait avec VSCode en allant au menu Terminal -> New Terminal.  
-    -Taper la commande suivante:  
-      docker cp target/movie-1.0-SNAPSHOT-jar-with-dependencies.jar hadoop-master:/root/hadoop-project.jar
-10. Deplacer Movie.cvs dans votre Docker:
-docker cp src/main/resources/input/Movies.csv hadoop-master:/root/movie.csv
+6. Verify that the three containers are running properly by running:
+   ```bash
+   docker ps
+   ```
 
-# Lancer le programme  
+7. In your IDE's Explorer, under Maven, open the Lifecycle of the `movie` project.
 
-1. Entrer dans le contenaire master pour commencer à l'utiliser.  
-docker exec -it hadoop-master bash  
+8. Click on `package` to compile and package the project into a JAR file. A file named `movie-1.0-SNAPSHOT-jar-with-dependencies.jar` will be created under the project's `target` directory.
 
-2. Lancer hadoop et yarn  
-./start-hadoop.sh
+9. Copy the created JAR file into the master container. To do this:
+   - Open the terminal in the project directory (this can be done in VSCode by going to Terminal -> New Terminal).
+   - Type the following command:
+     ```bash
+     docker cp target/movie-1.0-SNAPSHOT-jar-with-dependencies.jar hadoop-master:/root/hadoop-project.jar
+     ```
 
-3. Créer un répertoire dans HDFS, appelé input.  
-hdfs dfs -mkdir -p input
+10. Move `Movies.csv` into your Docker container:
+    ```bash
+    docker cp src/main/resources/input/Movies.csv hadoop-master:/root/movie.csv
+    ```
 
-4. Deplacer le fichier csv dans le repertoire input  
-hdfs dfs -put  movie.csv input/
+## Running the Program  
 
-5. Lancer le job map reduce  
-hadoop jar hadoop-project.jar input output  
+1. Enter the master container to start using it:
+   ```bash
+   docker exec -it hadoop-master bash  
+   ```
 
-6. Afficher les dernières lignes du fichier généré output/part-r-00000  
-hdfs dfs -tail output/part-r-00000  
+2. Start Hadoop and YARN:
+   ```bash
+   ./start-hadoop.sh
+   ```
 
+3. Create a directory in HDFS called `input`:
+   ```bash
+   hdfs dfs -mkdir -p input
+   ```
+
+4. Move the CSV file into the `input` directory:
+   ```bash
+   hdfs dfs -put movie.csv input/
+   ```
+
+5. Run the MapReduce job:
+   ```bash
+   hadoop jar hadoop-project.jar input output  
+   ```
+
+6. Display the last lines of the generated file `output/part-r-00000`:
+   ```bash
+   hdfs dfs -tail output/part-r-00000  
+   ```
